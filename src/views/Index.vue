@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height">
-  <h1>Index</h1>
+
     <v-responsive class="d-flex align-center text-center fill-height">
       <v-img
         contain
@@ -17,7 +17,7 @@
       <v-row class="d-flex align-center justify-center">
         <v-col cols="auto">
           <v-btn
-            href="https://next.vuetifyjs.com/components/all/"
+            href="https://next.vuetifyjs.com/"
             min-width="164"
             rel="noopener noreferrer"
             target="_blank"
@@ -29,37 +29,39 @@
               start
             />
 
-            Components
+            Vuetify
           </v-btn>
         </v-col>
 
         <v-col cols="auto">
+
           <v-btn
             color="primary"
-            href="https://next.vuetifyjs.com/introduction/why-vuetify/#feature-guides"
+            href="/home"
             min-width="228"
             rel="noopener noreferrer"
             size="x-large"
-            target="_blank"
+
             variant="flat"
           >
             <v-icon
-              icon="mdi-speedometer"
+              icon="mdi-home"
               size="large"
               start
             />
 
-            Get Started
+            Go Home
           </v-btn>
+
         </v-col>
 
         <v-col cols="auto">
           <v-btn
-            href="https://community.vuetifyjs.com/"
+            href="https://github.com/Julio-Campos-Swork/app-e-shop-vuetify3"
             min-width="164"
             rel="noopener noreferrer"
             target="_blank"
-            variant="text"
+            variant="flat"
           >
             <v-icon
               icon="mdi-github"
@@ -72,6 +74,7 @@
         </v-col>
       </v-row>
     </v-responsive>
+
   </v-container>
 </template>
 
