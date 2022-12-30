@@ -9,6 +9,7 @@ const useSupabase = useSupabaseStore();
 onMounted(async () => {
   await useSupabase.getS();
   await useSupabase.checkAuth();
+  await userCheck();
   console.log("session",useSupabase.session);
 });
 const tab = ref(null);
@@ -29,31 +30,20 @@ const passwordRules = [
   (v) => v.length <= 10 || "La contraseña debe de ser mininmo de 6 caracteres",
 ];
 const loginUser = async () => {
-  console.log("Iniciar session");
-
-  let data = {
-    email: email.value,
-    password: password.value,
-  };
-  // await useAxios.loginUser("auth/login", data);
+ let { data, error } = await supabase.auth.signInWithPassword({
+ email: email.value,
+  password: password.value,
+})
+console.log("login",data)
+console.log("error",error)
 };
 
 const registrar = async () => {
-  console.log("Registrar");
-
-  let data = {
-    email: email.value,
-    password: password.value,
-  };
-  if (password.value == passwordCheck.value) {
-    try {
-      // await useAxios.getPost("auth/register", data);
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
-    console.log("los pass no coinciden");
-  }
+ let { data, error } = await supabase.auth.signUp({
+  email: email.value,
+  password: password.value,
+})
+console.log("data register",data)
 };
 
 const socialLogin = async (name) => {
@@ -71,22 +61,11 @@ async function signout() {
 const loading = ref(false);
 // const email = ref("");
 
-const handleLogin = async () => {
-  try {
-    loading.value = true;
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.value,
-    });
-    if (error) throw error;
-    alert("Check your email for the login link!");
-  } catch (error) {
-    if (error instanceof Error) {
-      alert(error.message);
-    }
-  } finally {
-    loading.value = false;
-  }
-};
+const userCheck = async () => {
+
+const { data: { user } } = await supabase.auth.getUser()
+console.log("User",user)
+}
 </script>
 
 <template>
@@ -134,6 +113,17 @@ const handleLogin = async () => {
                             rounded="lg"
                             block
                             >Login With Facebook</v-btn
+                          >
+                          <v-btn
+                            @click="socialLogin('twitter')"
+                            prepend-icon="mdi-twitter"
+                            size="small"
+                            variant="flat"
+                            class="mb-1"
+                            color="indigo"
+                            rounded="lg"
+                            block
+                            >Login With Twitter</v-btn
                           >
                           <v-btn
                             @click="socialLogin('github')"
@@ -189,6 +179,10 @@ const handleLogin = async () => {
                             @click:appendInner="show1 = !show1"
                             variant="underlined"
                           ></v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                          <RouterLink to="/resetPassword">Did you forget your password?</RouterLink>
+
                         </v-col>
                       </v-row>
                     </v-form>

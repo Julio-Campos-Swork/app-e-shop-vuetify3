@@ -26,6 +26,12 @@ const routes = [
     name: 'ShopCart',
     component: () => import('../views/ShopCart.vue')
 
+  },
+  {
+    path: '/resetPassword',
+    name: 'resetPassword',
+    component: () => import('../views/RestorePassword.vue')
+
   }
 
 ];
