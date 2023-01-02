@@ -50,10 +50,8 @@ const emailRules = reactive([
 ]);
 const resetPassword = async () => {
   const { error, data } = await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo: "https://localhost:3000/userProfile/",
+    redirectTo: "http://192.168.0.120:3000/updatePassword",
   });
-  console.log("data", data);
-  console.log("error", error);
 };
 </script>
 

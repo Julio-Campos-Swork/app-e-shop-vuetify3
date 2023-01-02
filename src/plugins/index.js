@@ -12,7 +12,7 @@ import { router } from '@/routes/routes'
 export function registerPlugins (app) {
   loadFonts()
   app
+  .use(pinia)
+  .use(vuetify)
   .use(router)
-    .use(vuetify)
-    .use(pinia)
 }

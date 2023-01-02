@@ -27,7 +27,7 @@ const emailRules = reactive([
 ]);
 const passwordRules = [
   (v) => !!v || "Contraseña requerida",
-  (v) => v.length <= 10 || "La contraseña debe de ser mininmo de 6 caracteres",
+  (v) => v.length >= 6 || "La contraseña debe de ser mininmo de 6 caracteres",
 ];
 const loginUser = async () => {
  let { data, error } = await supabase.auth.signInWithPassword({

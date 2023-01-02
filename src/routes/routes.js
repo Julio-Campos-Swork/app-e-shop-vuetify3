@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+import {useAuthUser} from '../middleware/useAuthUser'
+const auth = useAuthUser()
 const routes = [
   {
     path: '/',
@@ -12,8 +13,8 @@ const routes = [
   component: () => import("../views/Home.vue")
   },
   {
-    path: '/userProfile',
-    name: 'userProfile',
+    path: '/login',
+    name: 'login',
     component: () => import("../views/UserPage.vue")
   },
   {
@@ -32,10 +33,24 @@ const routes = [
     name: 'resetPassword',
     component: () => import('../views/RestorePassword.vue')
 
+  },
+  {
+    path: '/updatePassword',
+    name: 'UpdatePassword',
+    component: () => import('../views/updatePassword.vue')
   }
 
 ];
+
 export const router = createRouter({
   history:createWebHistory(),
   routes,
+})
+
+router.beforeEach(async (to, from, next) => {
+await auth.isLoggedIn()
+// console.log(auth.auth.value)
+  if(auth.auth.value != 'authenticated') next({ name: 'login' })
+
+ else next()
 })

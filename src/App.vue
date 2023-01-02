@@ -9,7 +9,7 @@
 
       <v-app-bar-title class="text-center text-white text-h5 font-weight-bold">Vuetify Shop</v-app-bar-title>
       <v-spacer></v-spacer>
-      <v-btn class="text-black"
+      <v-btn class="text-white"
         @click="toggleTheme()"
         :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
         :label="theme === 'light' ? 'Lights On' : 'Lights Out'"
@@ -37,7 +37,7 @@
           <RouterLink to="/shopcart" class="text-lime lighten-5 textDec" active-class="text-green">
             <v-tab value="CarShop" >ShopCart</v-tab>
           </RouterLink>
-          <RouterLink to="/userProfile" class="text-lime lighten-5 textDec" active-class="text-green">
+          <RouterLink to="/login" class="text-lime lighten-5 textDec" active-class="text-green">
             <v-tab value="UserProfile" >User</v-tab>
           </RouterLink>
         </v-tabs>
