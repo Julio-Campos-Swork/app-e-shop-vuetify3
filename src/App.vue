@@ -16,7 +16,18 @@
       >
         {{ bText }}
       </v-btn>
+      <v-tooltip
 
+          location="bottom"
+        >
+      <template v-slot:activator="{ props }">
+      <v-btn v-if="useSupaStore.session" v-bind="props" @click="signout()" color="red" icon="mdi-logout-variant">
+
+      </v-btn>
+
+      </template>
+      <span>Logout</span>
+        </v-tooltip>
       <!-- Extencion de las tabs -->
       <template v-slot:extension>
         <v-tabs
@@ -38,7 +49,10 @@
             <v-tab value="CarShop" >ShopCart</v-tab>
           </RouterLink>
           <RouterLink to="/login" class="text-lime lighten-5 textDec" active-class="text-green">
-            <v-tab value="UserProfile" >User</v-tab>
+            <v-tab v-if="!useSupaStore.session" value="LoginRegister" >Login/Register</v-tab>
+          </RouterLink>
+          <RouterLink to="/profile" class="text-lime lighten-5 textDec" active-class="text-green">
+            <v-tab v-if="useSupaStore.session" value="UserProfile" >Profile</v-tab>
           </RouterLink>
         </v-tabs>
       </template>
@@ -55,8 +69,12 @@
 
 <script setup>
 import Footer from "./components/Footer.vue";
+import { supabase } from "./helpers/supabaseConfig";
+import { ref, onMounted } from "vue";
+import { useSupabaseStore } from "./store/supabaseStore";
 
-import { ref } from "@vue/reactivity";
+
+const useSupaStore = useSupabaseStore();
 const theme = ref("light");
 const bText = ref("Lights Out");
 const tab = ref(null);
@@ -65,6 +83,15 @@ const toggleTheme = () => {
   theme.value = theme.value === "light" ? "dark" : "light";
   bText.value = bText.value === "Lights Out" ? "Lights On" : "Lights Out";
 };
+onMounted(async () => {
+  await useSupaStore.getS();
+  await useSupaStore.checkAuth();
+  console.log("session",useSupaStore.session);
+});
+
+async function signout() {
+  const { error } = await supabase.auth.signOut();
+}
 </script>
 
 <style scoped>

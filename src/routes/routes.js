@@ -15,7 +15,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import("../views/UserPage.vue")
+    component: () => import("../views/LoginRegister.vue")
   },
   {
     path: '/shop',
@@ -38,6 +38,11 @@ const routes = [
     path: '/updatePassword',
     name: 'UpdatePassword',
     component: () => import('../views/updatePassword.vue')
+  },
+  {
+    path: '/profile',
+    name: 'UserProfile',
+    component: () => import("../views/UserPage.vue")
   }
 
 ];
@@ -47,10 +52,10 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from, next) => {
-await auth.isLoggedIn()
-// console.log(auth.auth.value)
-  if(auth.auth.value != 'authenticated') next({ name: 'login' })
+// router.beforeEach(async (to, from, next) => {
+// await auth.isLoggedIn()
+// // console.log(auth.auth.value)
+//   if(auth.auth.value != 'authenticated') next({ name: 'login' })
 
- else next()
-})
+//  else next()
+// })

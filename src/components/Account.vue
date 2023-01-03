@@ -1,9 +1,9 @@
 <script setup>
   import { supabase } from '../helpers/supabaseConfig'
-  import { onMounted, ref, toRefs } from 'vue'
+  import { onMounted, ref } from 'vue'
+  import {useSupabaseStore} from '../store/supabaseStore.js'
 
-  const props = defineProps(['session'])
-  const { session } = toRefs(props)
+  const useSupabase = useSupabaseStore();
 
   const loading = ref(true)
   const username = ref('')
@@ -17,8 +17,8 @@
   async function getProfile() {
     try {
       loading.value = true
-      const { user } = session.value
-
+      const { user } = useSupabase.session;
+      console.log("userpage",user)
       let { data, error, status } = await supabase
         .from('profiles')
         .select(`username, website, avatar_url`)
@@ -62,17 +62,7 @@
     }
   }
 
-  async function signOut() {
-    try {
-      loading.value = true
-      let { error } = await supabase.auth.signOut()
-      if (error) throw error
-    } catch (error) {
-      alert(error.message)
-    } finally {
-      loading.value = false
-    }
-  }
+
 </script>
 
 <template>
