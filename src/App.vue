@@ -1,66 +1,9 @@
 <template>
   <v-app :theme="theme">
-    <v-app-bar color="indigo" extended image="./assets/banner.jpg">
-      <RouterLink to="/" class="textDec text-white">
+   <Banner  />
 
-      <v-app-bar-nav-icon class="ml-4" icon="mdi-home"></v-app-bar-nav-icon>
-      </RouterLink>
-      <v-spacer></v-spacer>
-
-      <v-app-bar-title class="text-center text-white text-h5 font-weight-bold">Vuetify Shop</v-app-bar-title>
-      <v-spacer></v-spacer>
-      <v-btn class="text-white"
-        @click="toggleTheme()"
-        :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-        :label="theme === 'light' ? 'Lights On' : 'Lights Out'"
-      >
-        {{ bText }}
-      </v-btn>
-      <v-tooltip
-
-          location="bottom"
-        >
-      <template v-slot:activator="{ props }">
-      <v-btn v-if="useSupaStore.session" v-bind="props" @click="signout()" color="red" icon="mdi-logout-variant">
-
-      </v-btn>
-
-      </template>
-      <span>Logout</span>
-        </v-tooltip>
-      <!-- Extencion de las tabs -->
-      <template v-slot:extension>
-        <v-tabs
-          v-model="tab"
-          grow
-          fixed-tabs
-          centered
-          density="compact"
-          color="green"
-          slider-color="light-blue lighten-5"
-        >
-          <RouterLink to="/home" class="text-lime lighten-5 textDec " active-class="text-green">
-            <v-tab value="Home" >Home</v-tab>
-          </RouterLink>
-          <RouterLink to="/shop" class="text-lime lighten-5 textDec" active-class="text-green">
-            <v-tab value="Shop" >Shop</v-tab>
-          </RouterLink>
-          <RouterLink to="/shopcart" class="text-lime lighten-5 textDec" active-class="text-green">
-            <v-tab value="CarShop" >ShopCart</v-tab>
-          </RouterLink>
-          <RouterLink to="/login" class="text-lime lighten-5 textDec" active-class="text-green">
-            <v-tab v-if="!useSupaStore.session" value="LoginRegister" >Login/Register</v-tab>
-          </RouterLink>
-          <RouterLink to="/profile" class="text-lime lighten-5 textDec" active-class="text-green">
-            <v-tab v-if="useSupaStore.session" value="UserProfile" >Profile</v-tab>
-          </RouterLink>
-        </v-tabs>
-      </template>
-    </v-app-bar>
     <v-main>
-      <v-card>
 
-      </v-card>
       <RouterView></RouterView>
       <Footer />
     </v-main>
@@ -69,33 +12,29 @@
 
 <script setup>
 import Footer from "./components/Footer.vue";
-import { supabase } from "./helpers/supabaseConfig";
+import Banner from "./components/Banner.vue";
 import { ref, onMounted } from "vue";
 import { useSupabaseStore } from "./store/supabaseStore";
 
 
-const useSupaStore = useSupabaseStore();
+const supaStore = useSupabaseStore();
 const theme = ref("light");
 const bText = ref("Lights Out");
-const tab = ref(null);
-const drawer = ref(null);
+
+//
+onMounted(async () => {
+  await supaStore.getS();
+  supaStore.checkAuth();
+  await supaStore.getCartItems();
+  console.log("session",supaStore.session);
+});
+//
 const toggleTheme = () => {
   theme.value = theme.value === "light" ? "dark" : "light";
   bText.value = bText.value === "Lights Out" ? "Lights On" : "Lights Out";
 };
-onMounted(async () => {
-  await useSupaStore.getS();
-  await useSupaStore.checkAuth();
-  console.log("session",useSupaStore.session);
-});
-
-async function signout() {
-  const { error } = await supabase.auth.signOut();
-}
 </script>
 
-<style scoped>
-.textDec {
-  text-decoration: none;
-}
+<style>
+
 </style>
