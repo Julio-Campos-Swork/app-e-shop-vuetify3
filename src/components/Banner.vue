@@ -9,7 +9,7 @@
       <v-app-bar-title class="text-center text-white text-h5 font-weight-bold">Vuetify Shop</v-app-bar-title>
       <v-spacer></v-spacer>
       <v-btn class="text-white"
-        @click="toggleTheme()"
+        @click="emit('toggleTheme')"
         :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
         :label="theme === 'light' ? 'Lights On' : 'Lights Out'"
       >
@@ -69,27 +69,60 @@
 
         <v-list>
           <v-list-item
-          :prepend-avatar="supaStore.session.user.user_metadata.avatar_url"
-          :title="supaStore.session.user.user_metadata.full_name"
-          :subtitle="supaStore.session.user.user_metadata.email"
+          :prepend-avatar="supaStore.userInfo.avatar_url"
+          :title="supaStore.userInfo.full_name"
           >
 
           </v-list-item>
         </v-list>
         <v-divider></v-divider>
-      <v-list>
-        <v-list-item
-          v-for="(item, index) in supaStore.itemsInCart.items"
-          :key="index"
-          :prepend-avatar="item.img_url"
-          border="md"
-          append-icon="mdi-delete"
-          @click.append-icon="supaStore.deleteProd(item.id_sell)"
-        >
-          {{ item.name }} - {{ item.price }}
+        <v-table fixed-header hover>
+              <!-- <thead>
+                <tr>
+                  <th class="text-left">
+                    img
+                  </th>
+                  <th class="text-left">
+                    Article Name
+                  </th>
+                  <th class="text-left">
+                    Total Item
+                  </th>
+                  <th class="text-left">
+                    Price
+                  </th>
+                  <th class="text-left">
+                    Delete
+                  </th>
+                </tr>
+              </thead> -->
 
-        </v-list-item>
-      </v-list>
+                <tbody >
+                  <tr
+                  v-for="item in supaStore.itemsInCart.items"
+                  :key="item.id_sell">
+                  <td style="border: inset 0pt">
+                    <v-avatar>
+                    <v-img
+                      :src="item.img_url"
+                    ></v-img>
+                  </v-avatar>
+                  </td>
+                  <td style="border: inset 0pt">
+                    {{ item.name }}
+                  </td>
+                  <td style="border: inset 0pt">
+                    {{ item.totalItem }}
+                  </td>
+                  <td style="border: inset 0pt">
+                    {{ item.price }}
+                  </td>
+                  <td style="border: inset 0pt">
+                    <v-icon class="text-red" @click="supaStore.deleteProd(item.id_sell)">mdi-delete</v-icon>
+                    </td>
+                  </tr>
+                </tbody>
+            </v-table>
       </v-card>
           </v-menu>
         </div>
@@ -99,18 +132,18 @@
 </template>
 
 <script setup>
-import { supabase } from "../helpers/supabaseConfig";
-import { ref, onMounted } from "vue";
+import { ref} from "vue";
 import { useSupabaseStore } from "../store/supabaseStore";
 
 const supaStore = useSupabaseStore();
-const theme = ref("light");
-const bText = ref("Lights Out");
+const emit = defineEmits(['toggleTheme']);
+const props = defineProps({theme: String, bText: String})
 const tab = ref(null);
-const toggleTheme = () => {
-  theme.value = theme.value === "light" ? "dark" : "light";
-  bText.value = bText.value === "Lights Out" ? "Lights On" : "Lights Out";
-};
+
+const init = () => {
+console.log(supaStore.userInfo)
+}
+init()
 </script>
 
 <style scoped>

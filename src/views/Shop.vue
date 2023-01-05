@@ -158,18 +158,15 @@
 <script setup>
 import { supabase } from "@/helpers/supabaseConfig";
 import { useFakeStoreApi } from "@/store/fakeStoreApi";
-import { useShopcartStore } from "@/store/shopCartStore";
 import { reactive, ref, watchEffect } from "vue";
 import { useSupabaseStore } from "@/store/supabaseStore";
 
 const supaStore = useSupabaseStore();
-const shopCart = useShopcartStore();
 const fakeApi = useFakeStoreApi();
 const imgDialog = ref(false);
 const imgDialog2 = ref(false);
 const imgClicked = ref("");
 const titleClicked = ref("");
-const cart = [];
 const getProducts = async () => {
   await fakeApi.getAllProducts("products");
   // await fakeApi.getAnotherFakeShop();
