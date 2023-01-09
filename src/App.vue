@@ -29,7 +29,8 @@ onMounted(async () => {
   supaStore.checkAuth();
   await supaStore.getCartItems();
   await supaStore.getProfile();
-  console.log("session",supaStore.session);
+  await supaStore.getFavorites();
+  // console.log("session",supaStore.session);
 });
 //
 </script>

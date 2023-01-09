@@ -18,7 +18,7 @@ export const useFakeStoreApi = defineStore("fakeStore", () => {
       // console.log("from axios", resp);
       fakeProducts.products = resp.data;
       const resp2 = await axios.get(OTHER_BASE_URL)
-      console.log("from axios", resp2);
+      // console.log("from axios", resp2);
 
   otherFakeProducts.products = resp2.data
     } catch (error) {

@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
-import { ref, reactive } from "vue";
+import { ref, reactive, toRaw } from "vue";
 import { supabase } from "../helpers/supabaseConfig";
 
 export const useSupabaseStore = defineStore("useSupabaseStore", () => {
   const session = ref();
   const emailSession = ref("");
-  const itemsInCart = reactive({ items: "" });
-  const itemTotal = ref("");
+  const itemsInCart = reactive({ items: [] });
+  const itemTotal = ref(0);
   const id_user = ref("");
   const userInfo = reactive({
     username: "",
@@ -14,12 +14,13 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     avatar_url: "",
     full_name: "",
   });
-
+  const btnAddLoading = ref(false)
+  const favoriteData = reactive({favs: []})
   //functions
   const getS = async () => {
     try {
       await supabase.auth.getSession().then(({ data }) => {
-        console.log("getS", data);
+        // console.log("getS", data);
         session.value = data.session;
         emailSession.value = data.session?.user?.email;
         id_user.value = data.session?.user?.id;
@@ -63,7 +64,7 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
   };
   //
   const deleteProd = async (item) => {
-    console.log("item", item);
+    // console.log("item", item);
     const { error } = await supabase
       .from("shopCart")
       .delete()
@@ -75,6 +76,60 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
 
   //
   const addTocart = async (
+    idProducto,
+    productName,
+    price,
+    count,
+    description,
+    img
+  ) => {
+    btnAddLoading.value = true;
+
+    await getCartItems();
+
+    if(itemsInCart.items == false){
+      await newInsert(
+        idProducto,
+        productName,
+        price,
+        count,
+        description,
+        img
+      );
+    }else{
+
+      let flag = false;
+      itemsInCart.items.forEach((element, index) => {
+        if(element.id_product == idProducto){
+          let total = element.totalItem + count;
+            updateTotalitem(element.id_sell, total);
+            flag = true;
+        }else{
+          flag = false;
+        }
+      })
+        if(flag == true){
+          console.log("item encontrado")
+        }else{
+
+          await newInsert(
+            idProducto,
+            productName,
+            price,
+            count,
+            description,
+            img
+          );
+        }
+      }
+      setTimeout(() => {
+        btnAddLoading.value = false;
+
+      }, 1300);
+
+  };
+
+  const newInsert = async (
     idProducto,
     productName,
     price,
@@ -97,11 +152,25 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
       .from("shopCart")
       .insert(dataInsert)
       .select();
-    console.log("error", error);
-    // console.log("data", data);
+    // console.log("error new insert", error);
+    // console.log("data new insert", data);
     await getCartItems();
   };
 
+  //
+  const updateTotalitem = async (id_sell, newTotal) => {
+    let update = {
+      id_sell: id_sell,
+      id_user: id_user.value,
+      totalItem: newTotal,
+    };
+    const { data, error } = await supabase.from("shopCart").upsert(update);
+
+    console.log("data updateTotalitem", data);
+    console.log("error updateTotalitem", error);
+
+    await getCartItems();
+  };
   //
   const getCartItems = async () => {
     try {
@@ -109,14 +178,17 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
         .from("shopCart")
         .select()
         .eq("id_user", id_user.value);
-      console.log("error", error);
-      // console.log("data", data);
+      // console.log("error", error);
+      console.log("data", data);
       // console.log("total de articulos", data.length);
 
       itemsInCart.items = data;
-      itemTotal.value = itemsInCart.items.length;
-      // console.log("itemsInCart.items", itemsInCart);
-      // console.log("itemsInCart.items tamaño", itemsInCart.items.length);
+      let total = 0;
+      itemsInCart.items.forEach((element) => {
+         total += element.totalItem
+      });
+      itemTotal.value = total;
+      console.log("itemTotal",itemTotal.value);
     } catch (error) {
       console.log("catch error", error);
     }
@@ -145,7 +217,6 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
 
   const updateProfile = async () => {
     try {
-
       const updates = {
         id: id_user.value,
         username: userInfo.username,
@@ -153,17 +224,75 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
         website: userInfo.website,
         avatar_url: userInfo.avatar_url,
         updated_at: new Date(),
-      }
+      };
 
-      let { error } = await supabase.from('profiles').upsert(updates)
-      if(!error) alert("Actualizado Con Exito")
-      if (error) throw error
+      let { error } = await supabase.from("profiles").upsert(updates);
+      if (!error) alert("Actualizado Con Exito");
+      if (error) throw error;
     } catch (error) {
-      alert(error.message)
+      alert(error.message);
     } finally {
       getProfile();
     }
   };
+
+  const saveFavorites = async (idProducto,img) => {
+    await getFavorites();
+    let dataInsert = {
+      created_at: new Date(),
+      id_user: id_user.value,
+      id_product: idProducto,
+      img_url: img,
+    };
+
+    if(favoriteData.favs == false){
+      const { data, error } = await supabase
+        .from("favorites")
+        .insert(dataInsert)
+        .select();
+        // console.log("error", error)
+        // console.log("data", data)
+
+    }else{
+      let flag = false;
+      favoriteData.favs.forEach(element => {
+        if(element.id_product == idProducto){
+          console.log("ya esta en favoritos")
+          flag = true
+        }else{
+          flag = false;
+        }
+      });
+      if(flag == true){
+        console.log("ya esta en favoritos")
+      }else{
+        const { data, error } = await supabase
+        .from("favorites")
+        .insert(dataInsert)
+        .select();
+      }
+    }
+
+      await getFavorites();
+  };
+
+  const getFavorites = async () => {
+    const { data, error } = await supabase
+      .from("favorites")
+      .select()
+      .eq("id_user", id_user.value)
+
+      favoriteData.favs = data;
+  }
+  const deletefav = async (idProducto) => {
+    const { data, error } = await supabase
+    .from('favorites')
+    .delete()
+    .match({ id_product: idProducto })
+     console.log("error", error)
+      console.log("data", data)
+      await getFavorites()
+  }
   return {
     getCartItems,
     addTocart,
@@ -178,6 +307,13 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     itemTotal,
     getProfile,
     userInfo,
-    updateProfile
+    updateProfile,
+    newInsert,
+    updateTotalitem,
+    btnAddLoading,
+    saveFavorites,
+    getFavorites,
+    favoriteData,
+    deletefav
   };
 });

@@ -69,17 +69,29 @@ import { reactive } from "@vue/reactivity";
 const useSupabase = useSupabaseStore();
 const grupedItems = reactive({items:[]})
 
-const groupCart = () => {
-  // console.log("itemsInCart", useSupabase.itemsInCart.items)
-  const itemsArray = useSupabase.itemsInCart.items.map(element => element);
-console.log("newArray", itemsArray)
+const groupCart = async () => {
+ await useSupabase.getCartItems()
+  // grupedItems.items = [];
+  // // console.log("grupedItems", grupedItems)
 
+  // const newArray = useSupabase.itemsInCart.items.map(el => el)
+  // console.log("newArray", newArray)
+  // newArray.forEach((element, index) => {
+  //   if(index == 0){
+  //     grupedItems.items.push(element)
+  //   }else{
+  //     let find = grupedItems.items.findIndex(ele => ele.id_product == element.id_product)
+  //     if(find == -1){
+  //     grupedItems.items.push(element)
 
+  //     }else{
+  //       let total = grupedItems.items[find].totalItem;
+  //       grupedItems.items[find].totalItem = total + 1;
+  //     }
+  //   }
 
-
-  useSupabase.itemsInCart.items.forEach((element, index) => {
-
-  });
+  // });
+  // console.log("grupedItems.items", grupedItems.items)
   // console.log("useSupabase.itemsInCart.items", useSupabase.itemsInCart.items)
 
 
