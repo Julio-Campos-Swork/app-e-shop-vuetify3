@@ -4,8 +4,8 @@
 
     <v-main>
       <RouterView></RouterView>
-      <Footer />
     </v-main>
+      <Footer />
   </v-app>
 </template>
 

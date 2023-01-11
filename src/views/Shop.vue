@@ -29,13 +29,13 @@
         :key="product.id"
       >
         <v-lazy transition="fade-transition">
-          <v-card
+          <v-card class="otra"
             min-height="300"
             density="compact"
             variant="elevated"
             :title="product.title"
           >
-            <v-card-text>
+            <v-card-text class="otra">
               <v-row align-content="center">
                 <v-img
                   lazy-src="../assets/loading.gif"
@@ -224,4 +224,15 @@ const minusProduct = () => {
   justify-content: center;
   align-items: center;
 }
+/* .otra{
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      150px,
+      1fr
+    )
+
+  );
+} */
 </style>

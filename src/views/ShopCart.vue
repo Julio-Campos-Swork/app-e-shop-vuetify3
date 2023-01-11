@@ -19,7 +19,10 @@
                     Total Item
                   </th>
                   <th class="text-left">
-                    Price
+                    Unit Price
+                  </th>
+                  <th class="text-left">
+                    Total Price
                   </th>
                   <th class="text-left">
                     Delete
@@ -48,7 +51,10 @@
                     ${{ item.price }}
                   </td>
                   <td style="border: inset 0pt">
-                    <v-icon class="text-red" @click="useSupabase.deleteProd(item.id_sell)">mdi-delete</v-icon>
+                    ${{ (item.price * item.totalItem).toFixed(2)}}
+                  </td>
+                  <td style="border: inset 0pt">
+                    <v-icon class="text-red" @click="btnConfirmDelete(item.id_sell)">mdi-delete</v-icon>
                     </td>
                   </tr>
                 </tbody>
@@ -58,13 +64,31 @@
                 </v-col>
     </v-row>
 
-
+    <v-dialog
+        max-height="250"
+        max-width="230"
+        v-model="deleteConfirm"
+        location="center"
+        persistent
+      >
+        <v-card>
+          <v-card-title class="text-center text-h5">Confirmation</v-card-title>
+          <v-card-text> Are You Shure? This Action Can't Be Undone </v-card-text>
+          <v-card-actions>
+            <v-btn color="red" size="small" @click="deleteConfirm = !deleteConfirm"
+              >Cancel</v-btn
+            >
+            <v-spacer></v-spacer>
+            <v-btn color="green" size="small" @click="deleteProd()">Confirm</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
   </v-container>
 </template>
 
 <script setup>
 import { useSupabaseStore } from "@/store/supabaseStore";
-import { reactive } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 
 const useSupabase = useSupabaseStore();
 const grupedItems = reactive({items:[]})
@@ -97,6 +121,16 @@ const groupCart = async () => {
 
 };
 groupCart();
+const itemToDelete = ref("")
+const deleteConfirm = ref(false);
+const btnConfirmDelete = (item) => {
+  itemToDelete.value = item;
+  deleteConfirm.value = true;
+};
+const deleteProd = () => {
+  useSupabase.deleteProd(itemToDelete.value)
+  deleteConfirm.value = false;
+}
 </script>
 
 <style scoped>

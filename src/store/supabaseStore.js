@@ -125,7 +125,7 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
       setTimeout(() => {
         btnAddLoading.value = false;
 
-      }, 1300);
+      }, 1000);
 
   };
 
@@ -298,22 +298,22 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     addTocart,
     deleteProd,
     signOut,
-    session,
     getS,
     checkAuth,
-    emailSession,
     updatePassword,
-    itemsInCart,
-    itemTotal,
     getProfile,
-    userInfo,
     updateProfile,
     newInsert,
     updateTotalitem,
-    btnAddLoading,
     saveFavorites,
     getFavorites,
+    deletefav,
+    session,
+    emailSession,
+    itemsInCart,
+    itemTotal,
+    userInfo,
+    btnAddLoading,
     favoriteData,
-    deletefav
   };
 });
