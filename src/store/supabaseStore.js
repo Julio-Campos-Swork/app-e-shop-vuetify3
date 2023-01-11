@@ -292,7 +292,8 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
      console.log("error", error)
       console.log("data", data)
       await getFavorites()
-  }
+  };
+
   return {
     getCartItems,
     addTocart,

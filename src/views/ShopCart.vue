@@ -83,6 +83,9 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-snackbar location="top" timeout="1500" v-model="successAlert" color="green">
+     <v-icon>mdi-check-circle</v-icon> Product Deleted Successfull
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -130,7 +133,14 @@ const btnConfirmDelete = (item) => {
 const deleteProd = () => {
   useSupabase.deleteProd(itemToDelete.value)
   deleteConfirm.value = false;
-}
+  successAlert.value = true;
+
+  setTimeout(()=>{
+    successAlert.value = false;
+  },2000)
+};
+const successAlert = ref(false)
+
 </script>
 
 <style scoped>

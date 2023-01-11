@@ -1,32 +1,7 @@
 <template>
   <v-container>
-    <div class="fav">
-      <v-card width="400" title="Favorites" v-if="supaStore.favoriteData.favs != false">
-        <v-card-text>
-          <v-carousel height="250" hide-delimiter-background cycle>
-            <v-carousel-item
-              v-for="fav in supaStore.favoriteData.favs"
-              :src="fav.img_url"
-            >
-            </v-carousel-item>
-          </v-carousel>
-          <v-tooltip location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-icon
-                v-bind="props"
-                color="red"
-                @click="supaStore.deletefav(fav.id_product)"
-              >
-                mdi-delete
-              </v-icon>
-            </template>
-            <span>Delete favorite</span>
-          </v-tooltip>
-        </v-card-text>
-      </v-card>
-    </div>
-    <br />
-    <br />
+
+    <h3 class="text-center">{{ fakeApi.selectedcategory }}</h3>
     <v-row>
       <v-col
         cols="3"
@@ -34,19 +9,18 @@
         sm="3"
         lg="3"
         align-self="baseline"
-        v-for="product in fakeApi.fakeProducts.products"
+        v-for="product in fakeApi.fakeProductsBycategory.products"
         :key="product.id"
       >
         <v-lazy transition="fade-transition">
-            <v-card elevation="18" append-icon="mdi-heart"
+          <v-card
 
             min-height="300"
             density="compact"
             variant="elevated"
             :title="product.title"
-            @click:append-icon="supaStore.saveFavorites(product.id, product.image)"
           >
-            <v-card-text class="sobre">
+            <v-card-text >
               <v-row align-content="center">
                 <v-img
                   lazy-src="../assets/loading.gif"
@@ -123,7 +97,6 @@
         </v-lazy>
       </v-col>
     </v-row>
-
     <v-dialog v-model="imgDialog" max-height="400" max-width="400">
       <v-card>
         <v-card-title>{{ titleClicked }}</v-card-title>
@@ -157,17 +130,14 @@ const fakeApi = useFakeStoreApi();
 const imgDialog = ref(false);
 const imgClicked = ref("");
 const titleClicked = ref("");
-const getProducts = async () => {
-  await fakeApi.getAllProducts("products");
-};
-getProducts();
+
+
 const openDialog = (img, title) => {
   // console.log("url img clicked",img)
   imgClicked.value = img;
   titleClicked.value = title;
   imgDialog.value = true;
 };
-
 const minusProduct = () => {
   totalToAdd.value == 1 ? (totalToAdd.value = 1) : totalToAdd.value--;
 };
@@ -178,30 +148,6 @@ const addTocart = async (id, title, price, totalToAdd, description, image) => {
 const successAddP = ref(false);
 </script>
 
-<style scoped>
-.fav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-/* .otra{
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(
-      150px,
-      1fr
-    )
+<style>
 
-  );
-} */
-.sobre:hover::before {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #ffee10;
-}
-.sobre:hover{
-  color: #ffee10;
-  box-shadow: 0 0 5px #ffee10;
-  /* text-shadow: 0 0 5px #ffee10; */
-}
 </style>

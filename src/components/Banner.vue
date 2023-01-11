@@ -74,6 +74,32 @@
         </RouterLink>
       </v-tabs>
 
+<div>
+  <v-menu location="bottom" persistent no-click-animation>
+    <template v-slot:activator="{ props }">
+      <v-btn append-icon="mdi-chevron-down" v-bind="props">
+        Categories
+      </v-btn>
+    </template>
+
+  <v-card color="transparent" elevation="0">
+
+  <v-list  >
+    <RouterLink to="/category" class="text-black lighten-5 textDec">
+
+          <v-list-item
+            v-for="category in useFakeApi.allCategories.categories"
+            :title="category"
+            @click="setCategory(category)"
+          ></v-list-item>
+    </RouterLink>
+
+    </v-list>
+  </v-card>
+  </v-menu>
+</div>
+
+<!-- itemcarts -->
       <div>
         <v-menu location="bottom" persistent no-click-animation>
           <template v-slot:activator="{ props }">
@@ -153,32 +179,43 @@
       </v-dialog>
     </template>
   </v-app-bar>
+  <v-snackbar location="top" timeout="1500" v-model="successAlert" color="green">
+     <v-icon>mdi-check-circle</v-icon> Product Deleted Successfull
+    </v-snackbar>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useSupabaseStore } from "../store/supabaseStore";
+import {useFakeStoreApi} from "../store/fakeStoreApi";
 
+const useFakeApi = useFakeStoreApi();
 const supaStore = useSupabaseStore();
 const emit = defineEmits(["toggleTheme"]);
 const props = defineProps({ theme: String, bText: String });
 const tab = ref(null);
 
-const init = () => {
-  console.log(supaStore.userInfo);
-};
-init();
 
 const itemToDelete = ref("");
 const deleteConfirm = ref(false);
 const btnConfirmDelete = (item) => {
   itemToDelete.value = item;
   deleteConfirm.value = true;
+
 };
 const deleteProd = () => {
   supaStore.deleteProd(itemToDelete.value);
   deleteConfirm.value = false;
+  successAlert.value = true;
+
+  setTimeout(()=>{
+    successAlert.value = false;
+  },2000)
 };
+const successAlert = ref(false)
+const setCategory = async (category) => {
+await useFakeApi.getCategory(category);
+}
 </script>
 
 <style scoped>

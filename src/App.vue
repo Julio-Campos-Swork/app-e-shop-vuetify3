@@ -14,7 +14,9 @@ import Footer from "./components/Footer.vue";
 import Banner from "./components/Banner.vue";
 import { ref, onMounted, toRefs } from "vue";
 import { useSupabaseStore } from "./store/supabaseStore";
+import {useFakeStoreApi} from "./store/fakeStoreApi";
 
+const useFakeApi = useFakeStoreApi();
 const supaStore = useSupabaseStore();
 const theme = ref("light");
 const bText = ref("Lights Out");
@@ -30,6 +32,7 @@ onMounted(async () => {
   await supaStore.getCartItems();
   await supaStore.getProfile();
   await supaStore.getFavorites();
+  await useFakeApi.getAllCategories();
   // console.log("session",supaStore.session);
 });
 //

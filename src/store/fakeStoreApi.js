@@ -7,8 +7,9 @@ export const useFakeStoreApi = defineStore("fakeStore", () => {
   const BASE_URL = "https://fakestoreapi.com/";
   const OTHER_BASE_URL = 'https://api.escuelajs.co/api/v1/products'
   const otherFakeProducts = reactive({products: null});
-
-
+  const allCategories = reactive({categories: ""})
+  const fakeProductsBycategory = reactive({products: null})
+  const selectedcategory = ref("");
 
   const getAllProducts = async (RUTA) => {
     try {
@@ -25,22 +26,36 @@ export const useFakeStoreApi = defineStore("fakeStore", () => {
       console.log(error);
     }
   };
+  const getAllCategories = async () => {
+    try {
+      const resp = await axios.get(`${BASE_URL}products/categories`);
+      allCategories.categories = resp.data;
+      console.log("allCategories", allCategories)
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
-// const getAnotherFakeShop = async () => {
-// try {
-//   const resp = await axios.get(OTHER_BASE_URL)
-//       console.log("from axios", resp);
+  const getCategory = async (category) => {
+    selectedcategory.value = category;
+    try {
+      const resp = await axios.get(`${BASE_URL}products/category/${category}`);
+      fakeProductsBycategory.products = resp.data;
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-//   otherFakeProducts.products = resp.data
-// } catch (error) {
-
-// }
-// }
 
   return {
     fakeProducts,
     getAllProducts,
     otherFakeProducts,
+    getAllCategories,
+    allCategories,
+    getCategory,
+    fakeProductsBycategory,
+    selectedcategory,
 
   };
 });

@@ -7,8 +7,8 @@
     </div>
 
     <div class="pt-0">
-      This is A Personal proyect to Practice Habilities in This Amazing Framework. Builded
-      with Vue 3 Composition API, Vite, Vuetify, Vue Roter And Pinia, Backend comming from fakestore and Supabase
+      This is A Personal Proyect to Practice Habilities in This Amazing Framework. Builded
+      With Vue 3 Composition API, Vite, Vuetify, Vue-Roter And Pinia, Backend Comes from Kakestore and Supabase
     </div>
 
     <v-divider></v-divider>

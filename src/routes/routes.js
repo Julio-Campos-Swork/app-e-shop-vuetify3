@@ -43,7 +43,17 @@ const routes = [
     path: '/profile',
     name: 'UserProfile',
     component: () => import("../views/UserPage.vue")
-  }
+  },
+  {
+    path: "/category",
+    name: 'category',
+    component: () => import("../views/Categories.vue"),
+
+  },
+  { path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFound.vue')
+  },
 
 ];
 
