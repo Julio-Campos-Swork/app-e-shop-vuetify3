@@ -5,23 +5,24 @@
         <v-card-text>
           <v-carousel height="250" hide-delimiter-background cycle>
             <v-carousel-item
-              v-for="fav in supaStore.favoriteData.favs"
-              :src="fav.img_url"
+              v-for="favorite in supaStore.favoriteData.favs"
+              :src="favorite.image"
             >
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-icon
+                    v-bind="props"
+                    size="x-large"
+                    @click="supaStore.addToFav(favorite.id, favorite.fav)"
+                    color="red"
+                    icon="mdi-heart-circle"
+                  >
+                  </v-icon>
+                </template>
+                <span>Delete favorite</span>
+              </v-tooltip>
             </v-carousel-item>
           </v-carousel>
-          <v-tooltip location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-icon
-                v-bind="props"
-                color="red"
-                @click="supaStore.deletefav(fav.id_product)"
-              >
-                mdi-delete
-              </v-icon>
-            </template>
-            <span>Delete favorite</span>
-          </v-tooltip>
         </v-card-text>
       </v-card>
     </div>
@@ -34,19 +35,18 @@
         sm="3"
         lg="3"
         align-self="baseline"
-        v-for="product in fakeApi.fakeProducts.products"
+        v-for="product in supaStore.AllProducts.products"
         :key="product.id"
       >
         <v-lazy transition="fade-transition">
-            <v-card elevation="18" append-icon="mdi-heart"
-
+          <v-card
+            elevation="18"
             min-height="300"
             density="compact"
             variant="elevated"
             :title="product.title"
-            @click:append-icon="supaStore.saveFavorites(product.id, product.image)"
           >
-            <v-card-text class="sobre">
+            <v-card-text>
               <v-row align-content="center">
                 <v-img
                   lazy-src="../assets/loading.gif"
@@ -58,7 +58,19 @@
                 ></v-img>
               </v-row>
               <br />
-              <div class="text-center">${{ product.price }}</div>
+              <br />
+
+              <v-row justify="space-around">
+                <div class="text-center text-h6">Price: ${{ product.price }}</div>
+                <div>
+                  <v-icon
+                    size="x-large"
+                    @click="supaStore.addToFav(product.id, product.fav)"
+                    :color="product.fav == 1 ? 'red' : 'gray'"
+                    icon="mdi-heart-circle"
+                  ></v-icon>
+                </div>
+              </v-row>
               <br />
               <v-expansion-panels variant="popout">
                 <v-expansion-panel
@@ -71,21 +83,22 @@
                 </v-expansion-panel>
               </v-expansion-panels>
               <br />
-              <v-row justify="center">
-                <v-icon @click="minusProduct()"> mdi-numeric-negative-1 </v-icon>
-                <v-btn variant="text" size="small">
-                  {{ totalToAdd }}
-                </v-btn>
-                <v-icon @click="totalToAdd++"> mdi-numeric-positive-1 </v-icon>
-              </v-row>
+
+              <div class="d-flex flex-row-reverse">
+
+                <v-sheet >
+                  <v-select
+                    style="width: 80px"
+                    bg-color="transparent"
+                    v-model="totalToAdd"
+                    :items="product.stock"
+                    single-line
+                  ></v-select>
+                </v-sheet>
+              </div>
+
             </v-card-text>
             <v-card-actions>
-              <v-btn
-                color="red"
-                @click="supaStore.saveFavorites(product.id, product.image)"
-              >
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
               <v-spacer></v-spacer>
               <v-btn
                 rounded="xl"
@@ -141,6 +154,9 @@
     >
       <v-icon>mdi-check</v-icon>Product Add To Cart Successfull
     </v-snackbar>
+    <v-btn color="indigo" @click="supaStore.getAllProducts()">
+      get from supabase productos
+    </v-btn>
   </v-container>
 </template>
 
@@ -151,14 +167,14 @@ import { reactive, ref, watchEffect } from "vue";
 import { useSupabaseStore } from "@/store/supabaseStore";
 
 const totalToAdd = ref(1);
-const itemToAdd = ref([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+const itemToAdd = ref(1);
 const supaStore = useSupabaseStore();
 const fakeApi = useFakeStoreApi();
 const imgDialog = ref(false);
 const imgClicked = ref("");
 const titleClicked = ref("");
 const getProducts = async () => {
-  await fakeApi.getAllProducts("products");
+  await supaStore.getAllProducts();
 };
 getProducts();
 const openDialog = (img, title) => {
@@ -168,12 +184,11 @@ const openDialog = (img, title) => {
   imgDialog.value = true;
 };
 
-const minusProduct = () => {
-  totalToAdd.value == 1 ? (totalToAdd.value = 1) : totalToAdd.value--;
-};
-const addTocart = async (id, title, price, totalToAdd, description, image) => {
-  await supaStore.addTocart(id, title, price, totalToAdd, description, image);
+
+const addTocart = async (id, title, price, count, description, image) => {
+  await supaStore.addTocart(id, title, price, count, description, image);
   successAddP.value = true;
+  totalToAdd.value = 1
 };
 const successAddP = ref(false);
 </script>
@@ -199,9 +214,12 @@ const successAddP = ref(false);
   transform: scale(1.1);
   box-shadow: 0 0 15px #ffee10;
 }
-.sobre:hover{
+.sobre:hover {
   color: #ffee10;
   box-shadow: 0 0 5px #ffee10;
   /* text-shadow: 0 0 5px #ffee10; */
+}
+.selectDiv {
+  width: 70px;
 }
 </style>
