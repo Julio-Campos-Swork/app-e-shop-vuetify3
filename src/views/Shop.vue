@@ -38,102 +38,106 @@
         v-for="product in supaStore.AllProducts.products"
         :key="product.id"
       >
-        <v-lazy transition="fade-transition">
-          <v-card
-            elevation="18"
-            min-height="300"
-            density="compact"
-            variant="elevated"
-            :title="product.title"
-          >
-            <v-card-text>
-              <v-row align-content="center">
-                <v-img
-                  lazy-src="../assets/loading.gif"
-                  class="justify-center"
-                  aspect-ratio="1"
-                  @click="openDialog(product.image, product.title)"
-                  :alt="product.title"
-                  :src="product.image"
-                ></v-img>
-              </v-row>
-              <br />
-              <br />
+        <RouterLink
+          class="textDec"
 
-              <v-row justify="space-around">
-                <div class="text-center text-h6">Price: ${{ product.price }}</div>
-                <div>
-                  <v-icon
-                    size="x-large"
-                    @click="supaStore.addToFav(product.id, product.fav)"
-                    :color="product.fav == 1 ? 'red' : 'gray'"
-                    icon="mdi-heart-circle"
-                  ></v-icon>
-                </div>
-              </v-row>
-              <br />
-              <v-expansion-panels variant="popout">
-                <v-expansion-panel
-                  rounded="xl"
-                  elevation="0"
-                  color="transparent"
-                  title="Description"
-                  :text="product.description"
-                >
-                </v-expansion-panel>
-              </v-expansion-panels>
-              <br />
+          :to="{ name: 'ProductDetail', params: { id: product.id  } }"
+        >
+          <v-lazy transition="fade-transition">
+            <v-card
+              elevation="18"
+              min-height="300"
+              density="compact"
+              variant="elevated"
+              :title="product.title"
+            >
+              <v-card-text>
+                <v-row align-content="center">
+                  <v-img
+                    lazy-src="../assets/loading.gif"
+                    class="justify-center"
+                    aspect-ratio="1"
+                    @click="openDialog(product.image, product.title)"
+                    :alt="product.title"
+                    :src="product.image"
+                  ></v-img>
+                </v-row>
+                <br />
+                <br />
 
-              <div class="d-flex flex-row-reverse">
-
-                <v-sheet >
-                  <v-select
-                    style="width: 80px"
-                    bg-color="transparent"
-                    v-model="totalToAdd"
-                    :items="product.stock"
-                    single-line
-                  ></v-select>
-                </v-sheet>
-              </div>
-
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                rounded="xl"
-                color="yellow"
-                variant="elevated"
-                @click="buyNow(product.id)"
-                >Buy</v-btn
-              >
-              <v-tooltip location="bottom">
-                <template v-slot:activator="{ props }">
-                  <v-btn
-                    v-bind="props"
+                <v-row justify="space-around">
+                  <div class="text-center text-h6">Price: ${{ product.price }}</div>
+                  <div>
+                    <v-icon
+                      size="x-large"
+                      @click="supaStore.addToFav(product.id, product.fav)"
+                      :color="product.fav == 1 ? 'red' : 'gray'"
+                      icon="mdi-heart-circle"
+                    ></v-icon>
+                  </div>
+                </v-row>
+                <br />
+                <v-expansion-panels variant="popout">
+                  <v-expansion-panel
                     rounded="xl"
-                    color="yellow"
-                    variant="elevated"
-                    :loading="supaStore.btnAddLoading"
-                    :disabled="supaStore.btnAddLoading"
-                    @click="
-                      addTocart(
-                        product.id,
-                        product.title,
-                        product.price,
-                        totalToAdd,
-                        product.description,
-                        product.image
-                      )
-                    "
-                    >Add to cart</v-btn
+                    elevation="0"
+                    color="transparent"
+                    title="Description"
+                    :text="product.description"
                   >
-                </template>
-                <span>Add to Cart</span>
-              </v-tooltip>
-            </v-card-actions>
-          </v-card>
-        </v-lazy>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+                <br />
+
+                <div class="d-flex flex-row-reverse">
+                  <v-sheet>
+                    <v-select
+                      style="width: 80px"
+                      bg-color="transparent"
+                      v-model="totalToAdd"
+                      :items="product.stock"
+                      single-line
+                    ></v-select>
+                  </v-sheet>
+                </div>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  rounded="xl"
+                  color="yellow"
+                  variant="elevated"
+                  @click="buyNow(product.id)"
+                  >Buy</v-btn
+                >
+                <v-tooltip location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      rounded="xl"
+                      color="yellow"
+                      variant="elevated"
+                      :loading="supaStore.btnAddLoading"
+                      :disabled="supaStore.btnAddLoading"
+                      @click="
+                        addTocart(
+                          product.id,
+                          product.title,
+                          product.price,
+                          totalToAdd,
+                          product.description,
+                          product.image
+                        )
+                      "
+                      >Add to cart</v-btn
+                    >
+                  </template>
+                  <span>Add to Cart</span>
+                </v-tooltip>
+              </v-card-actions>
+            </v-card>
+          </v-lazy>
+        </RouterLink>
       </v-col>
     </v-row>
 
@@ -184,13 +188,17 @@ const openDialog = (img, title) => {
   imgDialog.value = true;
 };
 
-
 const addTocart = async (id, title, price, count, description, image) => {
   await supaStore.addTocart(id, title, price, count, description, image);
   successAddP.value = true;
-  totalToAdd.value = 1
+  totalToAdd.value = 1;
 };
 const successAddP = ref(false);
+
+const productDetail = (product) => {
+  supaStore.productDetail.product = product;
+  console.log("supaStore.productDetail.product", supaStore.productDetail.product);
+};
 </script>
 
 <style scoped>
@@ -221,5 +229,8 @@ const successAddP = ref(false);
 }
 .selectDiv {
   width: 70px;
+}
+.textDec {
+  text-decoration: none;
 }
 </style>

@@ -50,6 +50,12 @@ const routes = [
     component: () => import("../views/Categories.vue"),
 
   },
+  {
+    path: "/product/:id",
+    name: "ProductDetail",
+    component: () => import("../views/Product.vue"),
+    props: true,
+  },
   { path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../views/NotFound.vue')

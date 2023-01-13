@@ -3,11 +3,11 @@ import { ref, reactive, toRaw } from "vue";
 import { supabase } from "../helpers/supabaseConfig";
 import { useFakeStoreApi } from "./fakeStoreApi";
 
-
 export const useSupabaseStore = defineStore("useSupabaseStore", () => {
   const fakeStore = useFakeStoreApi();
 
-  const AllProducts = reactive({products: null});
+  const productDetail = reactive({product: []})
+  const AllProducts = reactive({ products: null });
   const session = ref();
   const emailSession = ref("");
   const itemsInCart = reactive({ items: [] });
@@ -19,8 +19,8 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     avatar_url: "",
     full_name: "",
   });
-  const btnAddLoading = ref(false)
-  const favoriteData = reactive({favs: []})
+  const btnAddLoading = ref(false);
+  const favoriteData = reactive({ favs: [] });
   //functions
   const getS = async () => {
     try {
@@ -79,31 +79,27 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     await getCartItems();
   };
 
-
-    const getAllProducts = async () => {
-      const {data,error} = await supabase
-      .from('AllProducts')
+  const getAllProducts = async () => {
+    const { data, error } = await supabase
+      .from("AllProducts")
 
       .select();
-      data.sort(((a,b) => a.id - b.id))
+    data.sort((a, b) => a.id - b.id);
 
-      let arrayFav = [];
-      data.forEach(element => {
-        if(element.fav == 1){
-          arrayFav.push(element)
-        }
-        let arrayStock = [...Array(element.stock).keys()];
-        element.stock = arrayStock;
-      });
-      favoriteData.favs = arrayFav;
-      console.log("favoriteData.favs",favoriteData.favs)
-      AllProducts.products = data;
-      console.log("AllProducts.products", AllProducts.products)
-      // console.log("error", error)
-
-
-
-    }
+    let arrayFav = [];
+    data.forEach((element) => {
+      if (element.fav == 1) {
+        arrayFav.push(element);
+      }
+      let arrayStock = [...Array(element.stock).keys()];
+      element.stock = arrayStock;
+    });
+    favoriteData.favs = arrayFav;
+    console.log("favoriteData.favs", favoriteData.favs);
+    AllProducts.products = data;
+    console.log("AllProducts.products", AllProducts.products);
+    // console.log("error", error)
+  };
   //
   const addTocart = async (
     idProducto,
@@ -117,71 +113,60 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
 
     await getCartItems();
 
-    if(itemsInCart.items == false){
-      await newInsert(
-        idProducto,
-        productName,
-        price,
-        count,
-        description,
-        img
-      );
-    }else{
-
+    if (itemsInCart.items == false) {
+      await newInsert(idProducto, productName, price, count, description, img);
+    } else {
       let flag = false;
       itemsInCart.items.forEach((element, index) => {
-        if(element.id_product == idProducto){
+        if (element.id_product == idProducto) {
           let total = element.totalItem + count;
-            updateTotalitem(element.id_sell, total);
-            flag = true;
-        }else{
+          updateTotalitem(element.id_sell, total);
+          flag = true;
+        } else {
           flag = false;
         }
-      })
-        if(flag == true){
-          console.log("item encontrado")
-        }else{
-
-          await newInsert(
-            idProducto,
-            productName,
-            price,
-            count,
-            description,
-            img
-          );
-        }
+      });
+      if (flag == true) {
+        console.log("item encontrado");
+      } else {
+        await newInsert(
+          idProducto,
+          productName,
+          price,
+          count,
+          description,
+          img
+        );
       }
-      setTimeout(() => {
-        btnAddLoading.value = false;
-
-      }, 1000);
-
+    }
+    setTimeout(() => {
+      btnAddLoading.value = false;
+    }, 1000);
   };
 
-    const saveFakeApiInfo = () => {
-      fakeStore.fakeProducts.products.forEach( element => {
-        let insert = {
-          id: element.id,
-          title: element.title,
-          price: element.price,
-          description: element.description,
-          category: element.category,
-          image: element.image,
-          fav: 0,
-        };
-        insertFake(insert);
-      });
-    }
+  const saveFakeApiInfo = () => {
+    fakeStore.fakeProducts.products.forEach((element) => {
+      let insert = {
+        id: element.id,
+        title: element.title,
+        price: element.price,
+        description: element.description,
+        category: element.category,
+        image: element.image,
+        fav: 0,
+      };
+      insertFake(insert);
+    });
+  };
 
-    const insertFake = async (dataInsert) => {
-      const { data, error } = await supabase
+  const insertFake = async (dataInsert) => {
+    const { data, error } = await supabase
       .from("AllProducts")
       .insert(dataInsert)
       .select();
-      console.log("data",data)
-      console.log("error",error)
-    }
+    console.log("data", data);
+    console.log("error", error);
+  };
   const newInsert = async (
     idProducto,
     productName,
@@ -238,10 +223,10 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
       itemsInCart.items = data;
       let total = 0;
       itemsInCart.items.forEach((element) => {
-         total += element.totalItem
+        total += element.totalItem;
       });
       itemTotal.value = total;
-      console.log("itemTotal",itemTotal.value);
+      console.log("itemTotal", itemTotal.value);
     } catch (error) {
       console.log("catch error", error);
     }
@@ -289,23 +274,20 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     }
   };
 
-    const addToFav = async (productID, fav) => {
-      let checkUpdate;
-      (fav == 0) ? checkUpdate = 1 : checkUpdate = 0;
-      let update = {
-        id: productID,
-        fav: checkUpdate,
-      }
-      const {data, error} = await supabase
-      .from('AllProducts')
-      .upsert(update);
+  const addToFav = async (productID, fav) => {
+    let checkUpdate;
+    fav == 0 ? (checkUpdate = 1) : (checkUpdate = 0);
+    let update = {
+      id: productID,
+      fav: checkUpdate,
+    };
+    const { data, error } = await supabase.from("AllProducts").upsert(update);
 
-      console.log("error",error)
-      await getAllProducts();
-    }
+    console.log("error", error);
+    await getAllProducts();
+  };
 
-
-  const saveFavorites = async (idProducto,img) => {
+  const saveFavorites = async (idProducto, img) => {
     await getFavorites();
     let dataInsert = {
       created_at: new Date(),
@@ -314,53 +296,61 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
       img_url: img,
     };
 
-    if(favoriteData.favs == false){
+    if (favoriteData.favs == false) {
       const { data, error } = await supabase
         .from("favorites")
         .insert(dataInsert)
         .select();
-        // console.log("error", error)
-        // console.log("data", data)
-
-    }else{
+      // console.log("error", error)
+      // console.log("data", data)
+    } else {
       let flag = false;
-      favoriteData.favs.forEach(element => {
-        if(element.id_product == idProducto){
-          console.log("ya esta en favoritos")
-          flag = true
-        }else{
+      favoriteData.favs.forEach((element) => {
+        if (element.id_product == idProducto) {
+          console.log("ya esta en favoritos");
+          flag = true;
+        } else {
           flag = false;
         }
       });
-      if(flag == true){
-        console.log("ya esta en favoritos")
-      }else{
+      if (flag == true) {
+        console.log("ya esta en favoritos");
+      } else {
         const { data, error } = await supabase
-        .from("favorites")
-        .insert(dataInsert)
-        .select();
+          .from("favorites")
+          .insert(dataInsert)
+          .select();
       }
     }
 
-      await getFavorites();
+    await getFavorites();
   };
 
   const getFavorites = async () => {
     const { data, error } = await supabase
       .from("favorites")
       .select()
-      .eq("id_user", id_user.value)
+      .eq("id_user", id_user.value);
 
-      favoriteData.favs = data;
-  }
+    favoriteData.favs = data;
+  };
   const deletefav = async (idProducto) => {
     const { data, error } = await supabase
-    .from('favorites')
-    .delete()
-    .match({ id_product: idProducto })
-     console.log("error", error)
-      console.log("data", data)
-      await getFavorites()
+      .from("favorites")
+      .delete()
+      .match({ id_product: idProducto });
+    console.log("error", error);
+    console.log("data", data);
+    await getFavorites();
+  };
+
+  const getOneProduct = async (idProduct) => {
+const {data, error} = await supabase
+    .from("AllProducts")
+    .select()
+    .eq("id", idProduct)
+console.log("data one product", data)
+console.log("error one product", error)
   };
 
   return {
@@ -389,5 +379,6 @@ export const useSupabaseStore = defineStore("useSupabaseStore", () => {
     getAllProducts,
     AllProducts,
     addToFav,
+    productDetail,
   };
 });
